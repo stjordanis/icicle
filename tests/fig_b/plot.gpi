@@ -2,7 +2,9 @@ reset
 
 set term svg size 900,390 font ",13"
 
-set ylabel "wall time per timestep [s]" offset 2,0
+scl = 1e6*1/75./75.
+
+set ylabel "wall time per grid box per timestep [µs]" offset 2,0
 set xlabel "toggled processes"
 set x2label " " offset 6
 set xtics (\
@@ -20,10 +22,11 @@ set x2tics (\
 set grid x2tics ytics
 set xrange [-.2:3.65]
 set logscale y
-set yrange [.01:30]
+set yrange [scl*.0025:scl*33]
+set format y "  %g"
 set key outside Left reverse invert
 
-datafile = "out.10_float"
+datafile = "out.new"
 idx_cpp = "lgrngn --backend=serial  --sd_conc_mean="
 idx_om2 = "lgrngn --backend=OpenMP OMP_NUM_THREADS=2 --sd_conc_mean="
 idx_om4 = "lgrngn --backend=OpenMP OMP_NUM_THREADS=4 --sd_conc_mean="
@@ -33,17 +36,17 @@ set key font ",12" samplen .75 spacing .82
 set output "plot_10.svg"
 
 plot \
-  datafile index "blk_1m"      using ($0+.00):1 w linespoints lt 1 pt 12 lw 2 t "single-moment bulk", \
-  datafile index "blk_2m"      using ($0+.00):1 w linespoints lt 3 lw 2 t "double-moment bulk", \
-  datafile index idx_cda."8"   using ($0+.15):1 w linespoints lt 5 lw 2 t "particles / 8 per cell / CUDA", \
-  datafile index idx_om4."8"   using ($0+.15):1 w      points lt 6 lw 2 t "particles / 8 per cell / OpenMP / 4 threads", \
-  datafile index idx_om2."8"   using ($0+.15):1 w      points lt 7 lw 2 t "particles / 8 per cell / OpenMP / 2 threads", \
-  datafile index idx_cpp."8"   using ($0+.15):1 w      points lt 8 lw 2 t "particles / 8 per cell / serial", \
-  datafile index idx_cda."32"  using ($0+.30):1 w linespoints lt 5 lw 2 t "particles / 32 per cell / CUDA", \
-  datafile index idx_om4."32"  using ($0+.30):1 w      points lt 6 lw 2 t "particles / 32 per cell / OpenMP / 4 threads", \
-  datafile index idx_om2."32"  using ($0+.30):1 w      points lt 7 lw 2 t "particles / 32 per cell / OpenMP / 2 threads", \
-  datafile index idx_cpp."32"  using ($0+.30):1 w      points lt 8 lw 2 t "particles / 32 per cell / serial", \
-  datafile index idx_cda."128" using ($0+.45):1 w linespoints lt 5 lw 2 t "particles / 128 per cell / CUDA", \
-  datafile index idx_om4."128" using ($0+.45):1 w      points lt 6 lw 2 t "particles / 128 per cell / OpenMP / 4 threads", \
-  datafile index idx_om2."128" using ($0+.45):1 w      points lt 7 lw 2 t "particles / 128 per cell / OpenMP / 2 threads", \
-  datafile index idx_cpp."128" using ($0+.45):1 w      points lt 8 lw 2 t "particles / 128 per cell / serial"
+  datafile index "blk_1m"      using ($0+.00):(scl*$1) w linespoints lt 1 pt 12 lw 2 t "single-moment bulk", \
+  datafile index "blk_2m"      using ($0+.00):(scl*$1) w linespoints lt 3 lw 2 t "double-moment bulk", \
+  datafile index idx_cda."8"   using ($0+.15):(scl*$1) w linespoints lt 5 lw 2 t "particles / 8 per cell / CUDA", \
+  datafile index idx_om4."8"   using ($0+.15):(scl*$1) w      points lt 6 lw 2 t "particles / 8 per cell / OpenMP / 4 threads", \
+  datafile index idx_om2."8"   using ($0+.15):(scl*$1) w      points lt 7 lw 2 t "particles / 8 per cell / OpenMP / 2 threads", \
+  datafile index idx_cpp."8"   using ($0+.15):(scl*$1) w      points lt 8 lw 2 t "particles / 8 per cell / serial", \
+  datafile index idx_cda."32"  using ($0+.30):(scl*$1) w linespoints lt 5 lw 2 t "particles / 32 per cell / CUDA", \
+  datafile index idx_om4."32"  using ($0+.30):(scl*$1) w      points lt 6 lw 2 t "particles / 32 per cell / OpenMP / 4 threads", \
+  datafile index idx_om2."32"  using ($0+.30):(scl*$1) w      points lt 7 lw 2 t "particles / 32 per cell / OpenMP / 2 threads", \
+  datafile index idx_cpp."32"  using ($0+.30):(scl*$1) w      points lt 8 lw 2 t "particles / 32 per cell / serial", \
+  datafile index idx_cda."128" using ($0+.45):(scl*$1) w linespoints lt 5 lw 2 t "particles / 128 per cell / CUDA", \
+  datafile index idx_om4."128" using ($0+.45):(scl*$1) w      points lt 6 lw 2 t "particles / 128 per cell / OpenMP / 4 threads", \
+  datafile index idx_om2."128" using ($0+.45):(scl*$1) w      points lt 7 lw 2 t "particles / 128 per cell / OpenMP / 2 threads", \
+  datafile index idx_cpp."128" using ($0+.45):(scl*$1) w      points lt 8 lw 2 t "particles / 128 per cell / serial"

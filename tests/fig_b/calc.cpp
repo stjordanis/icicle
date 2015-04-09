@@ -85,7 +85,7 @@ std::cout << "# " << micro << " " << backend << " " << env << " " << sd_conc << 
 		<< " --outfreq=" << nt * mlt << " --nt=" << nt * mlt
 		<< " --micro=" << micro << " " << backend << " " << sd_conc << " " << proc.at(micro).at(prcs);  
 
-	      if (micro == "lgrngn") cmd << " --sstp_cond=10 --sstp_coal=10 --spinup=0"; // 44
+	      if (micro == "lgrngn") cmd << " --sstp_cond=1 --sstp_coal=1 --spinup=0"; // 44
 
 	      notice_macro("about to call: " << cmd.str())
 
