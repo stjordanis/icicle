@@ -92,6 +92,9 @@ void setopts_micro(
   rt_params.cloudph_opts_init.sstp_coal = vm["sstp_coal"].as<int>();
   rt_params.cloudph_opts_init.sstp_chem = vm["sstp_chem"].as<int>();
 
+  // coalescence kernel choice
+  rt_params.cloudph_opts_init.kernel = libcloudphxx::lgrngn::kernel_t::geometric;
+
   // parsing --out_dry and --out_wet options values
   // the format is: "rmin:rmax|0,1,2;rmin:rmax|3;..."
   for (auto &opt : std::set<std::string>({"out_dry", "out_wet"}))
