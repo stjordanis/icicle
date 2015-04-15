@@ -11,7 +11,7 @@ int main(int ac, char** av)
 
   std::string
     dir = string(av[1]) + "/tests/fig_a/",
-    h5  = dir + "out_lgrngn.h5",
+    h5  = dir + "out_lgrngn",
     svg = dir + "out_lgrngn_spec.svg";
 
   Gnuplot gp;

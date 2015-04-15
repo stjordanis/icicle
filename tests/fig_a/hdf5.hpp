@@ -32,9 +32,9 @@ std::map<std::string, int> h5n(
     map["outfreq"] = (tmp[1] - tmp[0]) / dt;
   }
 
-  h5f.openDataSet("X").getSpace().getSimpleExtentDims(n, NULL);
-  map["x"] = n[0];
-  map["z"] = n[1];
+  h5f.openDataSet("X").getSpace().getSimpleExtentDims(n, NULL); // X gives cell-border coordinates (+1)
+  map["x"] = n[0]-1;
+  map["z"] = n[1]-1;
 
   return map;
 }

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <libmpdata++/blitz.hpp> 
+#include <blitz/array.h> 
 
 #include <libcloudph++/common/hydrostatic.hpp>
 #include <libcloudph++/common/theta_std.hpp>
