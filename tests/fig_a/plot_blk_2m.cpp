@@ -15,7 +15,7 @@ int main(int ac, char** av)
 
   for (int at = 0; at < n["t"]; ++at) // TODO: mark what time does it actually mean!
   {
-    for (auto &plt : std::set<std::string>({"rc", "rr", "nc", "nr"}))
+    for (auto &plt : std::set<std::string>({"rc", "rr", "nc", "nr", "th"}))
     {
       Gnuplot gp;
       init(gp, h5 + ".plot/" + plt + "/" + zeropad(at * n["outfreq"]) + ".svg", 1, 1, n); 
@@ -49,6 +49,14 @@ int main(int ac, char** av)
 	gp << "set title 'rain drop specific concentration n_r [mg^{-1}]'\n"; 
 	gp << "set cbrange [0.01:10]\n";
 	gp << "set logscale cb\n";
+	plot(gp, nr);
+      }
+      else if (plt == "th")
+      {
+	auto nr = h5load(h5, "th", at * n["outfreq"]);
+	gp << "set title 'theta_d [K]'\n"; 
+	gp << "set cbrange [*:*]\n";
+	gp << "unset logscale cb\n";
 	plot(gp, nr);
       }
     }

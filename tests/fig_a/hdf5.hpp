@@ -33,8 +33,8 @@ std::map<std::string, int> h5n(
   }
 
   h5f.openDataSet("X").getSpace().getSimpleExtentDims(n, NULL);
-  map["x"] = n[0];
-  map["z"] = n[1];
+  map["x"] = n[0]-1;
+  map["z"] = n[1]-1;
 
   return map;
 }
