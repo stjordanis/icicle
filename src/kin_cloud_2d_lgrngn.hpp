@@ -128,12 +128,30 @@ class kin_cloud_2d_lgrngn : public kin_cloud_2d_common<ct_params_t>
 
       {
         using libmpdataxx::arakawa_c::h;
+        // temporarily Cx & Cz are multiplied by rhod ...
+        auto 
+          Cx = this->mem->GC[0](
+            rng_t(0, this->mem->grid_size[0]-1)^h, 
+            rng_t(0, this->mem->grid_size[1]-1)
+          ).reindex({0,0}),
+          Cz = this->mem->GC[1](
+            rng_t(0, this->mem->grid_size[0]-1), 
+            rng_t(0, this->mem->grid_size[1]-1)^h
+          ).reindex({0,0});
+
+        // ... and now dividing them by rhod (z=0 is located at j=1/2)
+        {
+          blitz::secondIndex j;
+          Cx /= icmw8_case1::rhod()(   j     * this->dj);
+          Cz /= icmw8_case1::rhod()((j - .5) * this->dj);
+        }
+
 	prtcls->init(
 	  make_arrinfo(this->mem->advectee(ix::th)),
 	  make_arrinfo(this->mem->advectee(ix::rv)),
 	  make_arrinfo(this->mem->g_factor()),
-	  make_arrinfo(this->mem->GC[0](this->i^h, this->j  ).reindex({0,0})),
-	  make_arrinfo(this->mem->GC[1](this->i,   this->j^h).reindex({0,0}))
+	  make_arrinfo(Cx),
+	  make_arrinfo(Cz)
 	); 
       }
 
