@@ -18,7 +18,7 @@
 // 8th ICMW case 1 by Wojciech Grabowski)
 namespace icmw8_case1
 {
-  using real_t = float; //double;
+  using real_t = double;
 
   namespace hydrostatic = libcloudphxx::common::hydrostatic;
   namespace theta_std = libcloudphxx::common::theta_std;
