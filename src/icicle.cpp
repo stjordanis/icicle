@@ -135,16 +135,6 @@ int main(int argc, char** argv)
       {
 	enum { n_eqns = 6 };
 	struct ix { enum {th, rv, rc, rr, nc, nr}; }; 
-
-        static constexpr int hint_scale(const int &e) 
-	{
-	  return 
-            e == ix::nc ?  24 : // 1.7e7
-            e == ix::nr ?  17 : // 1.3e5 
-            e == ix::rc ? -14 : // 1.6e4
-            e == ix::rr ? -14 : // 1.6e4
-            0;
-	}
       };
       run<kin_cloud_2d_blk_2m<ct_params_t>>(nx, nz, nt, outdir, outfreq, spinup);
     }
