@@ -2,7 +2,7 @@ reset
 
 set term svg size 900,390 font ",13"
 
-scl = 1e6*1/75./75.
+scl = 1e6/75./75.
 
 set ylabel "wall time per grid box per timestep [µs]" offset 2,0
 set xlabel "toggled processes"
@@ -22,18 +22,18 @@ set x2tics (\
 set grid x2tics ytics
 set xrange [-.2:3.65]
 set logscale y
-set yrange [scl*.0025:scl*33]
+set yrange [scl*.0025:1000]
 set format y "  %g"
 set key outside Left reverse invert
 
-datafile = "out.new"
+datafile = "timings.txt"
 idx_cpp = "lgrngn --backend=serial  --sd_conc_mean="
 idx_om2 = "lgrngn --backend=OpenMP OMP_NUM_THREADS=2 --sd_conc_mean="
 idx_om4 = "lgrngn --backend=OpenMP OMP_NUM_THREADS=4 --sd_conc_mean="
 idx_cda = "lgrngn --backend=CUDA  --sd_conc_mean="
 
 set key font ",12" samplen .75 spacing .82
-set output "plot_10.svg"
+set output "timings.svg"
 
 plot \
   datafile index "blk_1m"      using ($0+.00):(scl*$1) w linespoints lt 1 pt 12 lw 2 t "single-moment bulk", \
