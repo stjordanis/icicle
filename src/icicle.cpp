@@ -8,6 +8,7 @@
 #include <libmpdata++/bcond/cyclic_2d.hpp>
 #include <libmpdata++/bcond/open_2d.hpp>
 #include <libmpdata++/concurr/boost_thread.hpp> // not to conflict with OpenMP used via Thrust in libcloudph++
+#include <libmpdata++/concurr/serial.hpp> // not to conflict with OpenMP used via Thrust in libcloudph++
 
 #include "icmw8_case1.hpp" // 8th ICMW case 1 by Wojciech Grabowski)
 namespace setup = icmw8_case1;
@@ -23,7 +24,7 @@ namespace setup = icmw8_case1;
 
 // model run logic - the same for any microphysics
 template <class solver_t>
-void run(int nx, int nz, int nt, const std::string &outdir, const int &outfreq, int spinup)
+void run(int nx, int nz, int nt, const std::string &outdir, const int &outfreq, int spinup, bool serial)
 {
   // instantiation of structure containing simulation parameters
   typename solver_t::rt_params_t p;
@@ -37,20 +38,44 @@ void run(int nx, int nz, int nt, const std::string &outdir, const int &outfreq, 
   setopts_micro<solver_t>(p, nx, nz, nt);
 
   // solver instantiation
-  concurr::boost_thread<solver_t, 
-    bcond::cyclic, bcond::cyclic,
-    bcond::open,   bcond::open 
-  > slv(p);
+  std::unique_ptr<
+    concurr::any<
+      typename solver_t::real_t, 
+      solver_t::n_dims
+    >
+  > slv;
+  if (serial)
+  {
+    using concurr_t = concurr::serial<
+      solver_t, 
+      bcond::cyclic, bcond::cyclic,
+      bcond::open,   bcond::open 
+    >;
+    slv.reset(new concurr_t(p));
 
-  // initial condition
-  setup::intcond(slv);
+    // initial condition
+    setup::intcond(*static_cast<concurr_t*>(slv.get()));
+  }
+  else
+  {
+    using concurr_t = concurr::boost_thread<
+      solver_t, 
+      bcond::cyclic, bcond::cyclic,
+      bcond::open,   bcond::open 
+    >;
+    slv.reset(new concurr_t(p));
+
+    // initial condition
+    setup::intcond(*static_cast<concurr_t*>(slv.get()));
+  }
+
 
   // setup panic pointer and the signal handler
-  panic = slv.panic_ptr();
+  panic = slv->panic_ptr();
   set_sigaction();
  
   // timestepping
-  slv.advance(nt);
+  slv->advance(nt);
 }
 
 
@@ -82,6 +107,7 @@ int main(int argc, char** argv)
       ("outdir", po::value<std::string>(), "output file name (netCDF-compatible HDF5)")
       ("outfreq", po::value<int>(), "output rate (timestep interval)")
       ("spinup", po::value<int>()->default_value(2400) , "number of initial timesteps during which rain formation is to be turned off")
+      ("adv_serial", po::value<bool>()->default_value(false), "force advection to be computed on single thread")
       ("help", "produce a help message (see also --micro X --help)")
     ;
     po::variables_map vm;
@@ -115,6 +141,9 @@ int main(int argc, char** argv)
       nt = vm["nt"].as<int>(),
       spinup = vm["spinup"].as<int>();
 
+    // handling serial-advection-forcing flag
+    bool adv_serial = vm["adv_serial"].as<bool>();
+
     // handling the "micro" option
     std::string micro = vm["micro"].as<std::string>();
     if (micro == "blk_1m")
@@ -126,7 +155,7 @@ int main(int argc, char** argv)
         struct ix { enum {th, rv, rc, rr}; };
         enum { hint_norhs = opts::bit(ix::th) | opts::bit(ix::rv) }; // only through adjustments
       };
-      run<kin_cloud_2d_blk_1m<ct_params_t>>(nx, nz, nt, outdir, outfreq, spinup);
+      run<kin_cloud_2d_blk_1m<ct_params_t>>(nx, nz, nt, outdir, outfreq, spinup, adv_serial);
     }
     else
     if (micro == "blk_2m")
@@ -135,18 +164,8 @@ int main(int argc, char** argv)
       {
 	enum { n_eqns = 6 };
 	struct ix { enum {th, rv, rc, rr, nc, nr}; }; 
-
-        static constexpr int hint_scale(const int &e) 
-	{
-	  return 
-            e == ix::nc ?  24 : // 1.7e7
-            e == ix::nr ?  17 : // 1.3e5 
-            e == ix::rc ? -14 : // 1.6e4
-            e == ix::rr ? -14 : // 1.6e4
-            0;
-	}
       };
-      run<kin_cloud_2d_blk_2m<ct_params_t>>(nx, nz, nt, outdir, outfreq, spinup);
+      run<kin_cloud_2d_blk_2m<ct_params_t>>(nx, nz, nt, outdir, outfreq, spinup, adv_serial);
     }
     else 
     if (micro == "lgrngn")
@@ -157,7 +176,7 @@ int main(int argc, char** argv)
 	struct ix { enum {th, rv}; };
         enum { hint_norhs = opts::bit(ix::th) | opts::bit(ix::rv) }; // only through adjustments
       };
-      run<kin_cloud_2d_lgrngn<ct_params_t>>(nx, nz, nt, outdir, outfreq, spinup);
+      run<kin_cloud_2d_lgrngn<ct_params_t>>(nx, nz, nt, outdir, outfreq, spinup, adv_serial);
     }
     else BOOST_THROW_EXCEPTION(
       po::validation_error(

@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <sstream> // std::ostringstream
+#include <fstream> 
 #include <boost/timer/timer.hpp>
 #include <boost/filesystem.hpp>
 
@@ -44,6 +45,10 @@ int main(int ac, char** av)
     })})
   });
 
+  // output file
+  std::ofstream output("timings.txt");
+  if (!output.good()) throw std::runtime_error("failed to open output file");
+
   for (auto &micro : list<string>({"blk_1m", "blk_2m", "lgrngn"}))
   {
     for (auto &backend : micro == "lgrngn"
@@ -69,7 +74,9 @@ int main(int ac, char** av)
 	  }) 
 	  : list<string>({""})
 	) {
-std::cout << "# " << micro << " " << backend << " " << env << " " << sd_conc << std::endl;
+          // gnuplot-understendable output
+          output << "# " << micro << " " << backend << " " << env << " " << sd_conc << std::endl;
+
 	  for (auto prcs : list<string>({"a___","ac__","acc_","accs"}))
 	  {
 	    // multiplynig the time of the simulation to avoid measuring too short wall times
@@ -82,7 +89,7 @@ std::cout << "# " << micro << " " << backend << " " << env << " " << sd_conc << 
 	      cmd 
 		<< env << " "
 		<< av[1] 
-		<< "/src/icicle --outdir=" 
+		<< "/src/icicle --adv_serial=true --outdir=" 
                   << boost::filesystem::temp_directory_path().string() 
                   << "/" << boost::filesystem::unique_path("icicle-fig_b-%%%%%%%%").string() 
 		<< " --outfreq=" << 44 * nt * mlt << " --nt=" << nt * mlt
@@ -106,10 +113,15 @@ std::cout << "# " << micro << " " << backend << " " << env << " " << sd_conc << 
 	      time_avg += (nt == nt_load ? -1 : 1) * time_min;
 	    }
 	    time_avg /= mlt * (nt_calc - nt_load);
-std::cout << time_avg << std::endl;
+
+            // gnuplot-understendable output
+            output << time_avg << std::endl;
+            output.flush();
 	  }
-std::cout << std::endl;
-std::cout << std::endl;
+
+          // gnuplot-understendable output
+          output << std::endl;
+          output << std::endl;
 	}
       }
     }
