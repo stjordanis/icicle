@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream> // std::ostringstream
 #include <boost/timer/timer.hpp>
+#include <boost/filesystem.hpp>
 
 #include "../common.hpp"
 
@@ -81,8 +82,10 @@ std::cout << "# " << micro << " " << backend << " " << env << " " << sd_conc << 
 	      cmd 
 		<< env << " "
 		<< av[1] 
-		<< "/src/icicle --outdir=/dev/null" 
-		<< " --outfreq=" << nt * mlt << " --nt=" << nt * mlt
+		<< "/src/icicle --outdir=" 
+                  << boost::filesystem::temp_directory_path().string() 
+                  << "/" << boost::filesystem::unique_path("icicle-fig_b-%%%%%%%%").string() 
+		<< " --outfreq=" << 44 * nt * mlt << " --nt=" << nt * mlt
 		<< " --micro=" << micro << " " << backend << " " << sd_conc << " " << proc.at(micro).at(prcs);  
 
 	      if (micro == "lgrngn") cmd << " --sstp_cond=10 --sstp_coal=10 --spinup=0"; // 44

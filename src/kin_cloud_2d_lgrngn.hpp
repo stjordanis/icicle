@@ -133,11 +133,11 @@ class kin_cloud_2d_lgrngn : public kin_cloud_2d_common<ct_params_t>
           Cx = this->mem->GC[0](
             rng_t(0, this->mem->grid_size[0]-1)^h, 
             rng_t(0, this->mem->grid_size[1]-1)
-          ).reindex({0,0}),
+          ).reindex({0,0}).copy(),
           Cz = this->mem->GC[1](
             rng_t(0, this->mem->grid_size[0]-1), 
             rng_t(0, this->mem->grid_size[1]-1)^h
-          ).reindex({0,0});
+          ).reindex({0,0}).copy();
 
         // ... and now dividing them by rhod (z=0 is located at j=1/2)
         {

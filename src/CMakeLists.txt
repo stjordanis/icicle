@@ -1,15 +1,19 @@
-# requireing C++11  TODO-check if the compiler supports it!
+find_package(libmpdata++)
 
-find_package(OpenMP)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+if (NOT libmpdataxx_FOUND)
+  message(FATAL_ERROR "libmpdata++ not found")
+endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+  # make the Release flags the default
+  set(CMAKE_CXX_FLAGS ${libmpdataxx_CXX_FLAGS_RELEASE})
+  # ignore CMake defaults
+  set(CMAKE_CXX_FLAGS_RELEASE "")
+else()
+  set(CMAKE_CXX_FLAGS_DEBUG ${libmpdataxx_CXX_FLAGS_DEBUG})
+endif()
 
-find_path(GNUPLOT-IOSTREAM_INCLUDE_DIR PATH_SUFFIXES gnuplot-iostream/ NAMES gnuplot-iostream.h)
-#TODO: the same for blitz, libcloudph, libmpdata
-#TODO: add the above paths to compiler flags
-
-#
+# std::future
 include(CheckCXXSourceCompiles)
 check_cxx_source_compiles("#include <future>\n int main() { std::future<void> f; }\n" STD_FUTURE_WORKS)
 if(${STD_FUTURE_WORKS})
@@ -18,15 +22,13 @@ endif()
 
 add_executable(icicle icicle.cpp)
 
-# TODO: target_compile_options() // added to CMake on Jun 3rd 2013
+target_link_libraries(icicle ${libmpdataxx_LIBRARIES})
+target_include_directories(icicle PUBLIC ${libmpdataxx_INCLUDE_DIRS})
 
 find_package(Boost COMPONENTS thread iostreams system timer program_options filesystem REQUIRED)
 target_link_libraries(icicle ${Boost_LIBRARIES})
 
 #TODO: check if it's there
 target_link_libraries(icicle cloudphxx_lgrngn)
-
-find_package(HDF5 COMPONENTS CXX HL REQUIRED QUIET)
-target_link_libraries(icicle ${HDF5_LIBRARIES})
 
 install(TARGETS icicle DESTINATION bin)
