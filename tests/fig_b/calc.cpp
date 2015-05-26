@@ -80,7 +80,7 @@ int main(int ac, char** av)
 	  for (auto prcs : list<string>({"a___","ac__","acc_","accs"}))
 	  {
 	    // multiplynig the time of the simulation to avoid measuring too short wall times
-	    int mlt = micro != "lgrngn" ? 5 : (sd_conc == "--sd_conc_mean=8" ? 3 : 1);
+	    int mlt = (sd_conc != "--sd_conc_mean=128" ? 5 : 1);
 
 	    double time_avg = 0;
 	    for (auto &nt : list<int>({nt_load, nt_calc}))
