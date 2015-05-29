@@ -22,7 +22,7 @@ set x2tics (\
 set grid x2tics ytics
 set xrange [-.2:3.65]
 set logscale y
-set yrange [.5:5000]
+set yrange [.5:6000]
 set format y "  %g"
 set key outside Left reverse invert
 
