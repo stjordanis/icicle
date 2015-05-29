@@ -74,7 +74,7 @@ int main(int ac, char** av)
 	//                                                         rho_w  kg2g
 	auto tmp = h5load(h5, "rw_rng000_mom3", at * n["outfreq"]) * 4./3 * 3.14 * 1e3 * 1e3;
 	gp << "set title 'cloud water mixing ratio [g/kg]'\n";
-	gp << "set cbrange [0:1.5]\n";
+	gp << "set cbrange [0:1.3]\n";
 	plot(gp, tmp);
       }
       else if (plt == "rr")

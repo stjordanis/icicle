@@ -19,7 +19,7 @@ int main(int ac, char** av)
 {
   if (ac != 2) error_macro("expecting one argument - CMAKE_BINARY_DIR");
 
-  int nt_load = 1, nt_calc = 10, n_rpt = 3;
+  int nt_load = 1, nt_calc = 5, n_rpt = 3;
 
   using str = std::string;
   using mss = std::map<str,str>;
@@ -80,7 +80,11 @@ int main(int ac, char** av)
 	  for (auto prcs : list<string>({"a___","ac__","acc_","accs"}))
 	  {
 	    // multiplynig the time of the simulation to avoid measuring too short wall times
-	    int mlt = micro != "lgrngn" ? 5 : (sd_conc == "--sd_conc_mean=8" ? 3 : 1);
+	    int mlt = 1;
+            if (micro != "lgrngn") mlt *= 10;
+            if (sd_conc == "--sd_conc_mean=8") mlt *= 6; 
+            if (sd_conc == "--sd_conc_mean=32") mlt *= 3;
+            if (backend == "--backend=CUDA") mlt *= 3;
 
 	    double time_avg = 0;
 	    for (auto &nt : list<int>({nt_load, nt_calc}))

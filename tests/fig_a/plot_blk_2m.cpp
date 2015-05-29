@@ -24,7 +24,7 @@ int main(int ac, char** av)
       {
 	auto rc = h5load(h5, "rc", at * n["outfreq"]) * 1e3;
 	gp << "set title 'cloud water mixing ratio r_c [g/kg]'\n"; 
-	gp << "set cbrange [0:1.5]\n";
+	gp << "set cbrange [0:1.3]\n";
 	plot(gp, rc);
       }
       else if (plt == "rr")

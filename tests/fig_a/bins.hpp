@@ -26,16 +26,16 @@ std::pair<
   std::set<std::pair<int,int>>
 > focus = {
   {   // left column
-    {17+ox, 21+oy}, 
-    {17+ox, 35+oy}, 
-    {17+ox, 37+oy}, 
-    {17+ox, 41+oy},
-    {17+ox, 65+oy} 
+    {16+ox, 20+oy}, 
+    {16+ox, 37+oy}, 
+    {16+ox, 39+oy}, 
+    {16+ox, 44+oy},
+    {16+ox, 65+oy} 
   },{ // right column
-    {58+ox, 21+oy},
-    {58+ox, 35+oy}, 
+    {58+ox, 20+oy},
     {58+ox, 37+oy}, 
-    {58+ox, 41+oy},
+    {58+ox, 39+oy}, 
+    {58+ox, 44+oy},
     {58+ox, 65+oy}
   }
 };
