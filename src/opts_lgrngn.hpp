@@ -94,8 +94,6 @@ void setopts_micro(
 
   // coalescence kernel choice
   rt_params.cloudph_opts_init.kernel = libcloudphxx::lgrngn::kernel_t::geometric;
-  // halving the collection efficiency to match the timing of precipitation onset in the blk_2m scheme
-  rt_params.cloudph_opts_init.kernel_parameters = {.5}; 
 
   // parsing --out_dry and --out_wet options values
   // the format is: "rmin:rmax|0,1,2;rmin:rmax|3;..."
